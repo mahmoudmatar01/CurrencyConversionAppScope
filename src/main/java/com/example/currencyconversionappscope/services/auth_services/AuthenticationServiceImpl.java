@@ -1,11 +1,11 @@
 package com.example.currencyconversionappscope.services.auth_services;
-
 import com.example.currencyconversionappscope.constant.enums.Role;
 import com.example.currencyconversionappscope.dto.auth.login.LoginRequestDto;
 import com.example.currencyconversionappscope.dto.auth.login.LoginResponseDto;
 import com.example.currencyconversionappscope.dto.auth.register.RegisterRequestDto;
 import com.example.currencyconversionappscope.dto.auth.register.RegisterResponseDto;
 import com.example.currencyconversionappscope.entity.User;
+import com.example.currencyconversionappscope.exceptions.GlobalExceptionClass;
 import com.example.currencyconversionappscope.repository.UserRepository;
 import com.example.currencyconversionappscope.securityconfig.JwtService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +15,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Map;
 
 
@@ -30,7 +28,7 @@ public class AuthenticationServiceImpl implements IBaseAuthenticationService{
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public RegisterResponseDto register(RegisterRequestDto dto) throws SQLIntegrityConstraintViolationException {
+    public RegisterResponseDto register(RegisterRequestDto dto)throws GlobalExceptionClass {
         var user = User
                 .builder()
                 .userName(dto.getUserNameOrEmail())
@@ -55,7 +53,7 @@ public class AuthenticationServiceImpl implements IBaseAuthenticationService{
     }
 
     @Override
-    public LoginResponseDto login(LoginRequestDto dto) throws Exception {
+    public LoginResponseDto login(LoginRequestDto dto) throws GlobalExceptionClass {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -64,7 +62,7 @@ public class AuthenticationServiceImpl implements IBaseAuthenticationService{
                     )
             );
         } catch (AuthenticationException e) {
-            throw new Exception("There is no authenticated user with that credentials");
+            throw new GlobalExceptionClass("There is no authenticated user with that credentials");
         }
 
         var user = repository.findUserByUserName(dto.getUserNameOrEmail())
